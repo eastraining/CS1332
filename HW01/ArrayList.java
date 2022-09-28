@@ -41,6 +41,16 @@ public class ArrayList<T> {
    */
   public void addToFront(T data) {
     // WRITE YOUR CODE HERE (DO NOT MODIFY METHOD HEADER)!
+    if (data == null) {
+      throw new IllegalArgumentException();
+    } else if (size != 0 && size % INITIAL_CAPACITY == 0) {
+      resizeBackingArray();
+    }
+    for (int i = size; i > 0; i--) {
+      backingArray[i] = backingArray[i - 1];
+    }
+    backingArray[0] = data;
+    size++;
   }
 
   /**
@@ -53,6 +63,13 @@ public class ArrayList<T> {
    */
   public void addToBack(T data) {
     // WRITE YOUR CODE HERE (DO NOT MODIFY METHOD HEADER)!
+    if (data == null) {
+      throw new IllegalArgumentException();
+    } else if (size != 0 && size % INITIAL_CAPACITY == 0) {
+      resizeBackingArray();
+    }
+    backingArray[size] = data;
+    size++;
   }
 
   /**
@@ -69,6 +86,13 @@ public class ArrayList<T> {
    */
   public T removeFromFront() {
     // WRITE YOUR CODE HERE (DO NOT MODIFY METHOD HEADER)!
+    T deletedValue = backingArray[0];
+    size--;
+    for (int i = 0; i < size; i++) {
+      backingArray[i] = backingArray[i + 1];
+    }
+    backingArray[size] = null;
+    return deletedValue;
   }
 
   /**
@@ -83,6 +107,10 @@ public class ArrayList<T> {
    */
   public T removeFromBack() {
     // WRITE YOUR CODE HERE (DO NOT MODIFY METHOD HEADER)!
+    size--;
+    T deletedValue = backingArray[size];
+    backingArray[size] = null;
+    return deletedValue;
   }
 
   /**
@@ -116,5 +144,26 @@ public class ArrayList<T> {
    */
   private void resizeBackingArray() {
     // WRITE YOUR CODE HERE (DO NOT MODIFY METHOD HEADER)!
+    T[] tempArray = (T[]) new Object[size * 2];
+    for (int i = 0; i < size; i++) {
+      tempArray[i] = backingArray[i];
+    }
+    backingArray = tempArray;
+  }
+
+  public static void main(String[] args) {
+    ArrayList<String> strList = new ArrayList<>();
+    System.out.println(strList.size());
+    for (int i = 0; i < 25; i++) {
+      strList.addToBack(Character.toString((char) 66 + i));
+    }
+    System.out.println(strList.size());
+    strList.addToFront(Character.toString((char) 65));
+    System.out.println(strList.size());
+    System.out.println(strList.removeFromBack());
+    for (int i = 0; i < 25; i++) {
+      System.out.print(strList.removeFromFront() + " ");
+    }
+    System.out.println();
   }
 }
