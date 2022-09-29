@@ -26,6 +26,14 @@ public class SinglyLinkedList<T> {
    */
   public void addToFront(T data) {
     // WRITE YOUR CODE HERE (DO NOT MODIFY METHOD HEADER)!
+    if (data == null) {
+      throw new IllegalArgumentException();
+    } else if (size == 0) {
+      head = tail = new SinglyLinkedListNode<T>(data);
+    } else {
+      head = new SinglyLinkedListNode<T>(data, head);
+    }
+    size++;
   }
 
   /**
@@ -38,6 +46,19 @@ public class SinglyLinkedList<T> {
    */
   public void addToBack(T data) {
     // WRITE YOUR CODE HERE (DO NOT MODIFY METHOD HEADER)!
+    if (data == null) {
+      throw new IllegalArgumentException();
+    } else if (size == 0) {
+      head = tail = new SinglyLinkedListNode<T>(data);
+    } else {
+      SinglyLinkedListNode<T> current = head;
+      while (current.getNext() != null) {
+        current = current.getNext();
+      }
+      current.setNext(new SinglyLinkedListNode<T>(data));
+      tail = current.getNext();
+    }
+    size++;
   }
 
   /**
@@ -50,6 +71,18 @@ public class SinglyLinkedList<T> {
    */
   public T removeFromFront() {
     // WRITE YOUR CODE HERE (DO NOT MODIFY METHOD HEADER)!
+    T deletedData;
+    if (size == 0) {
+      throw new NoSuchElementException();
+    } else {
+      deletedData = head.getData();
+      head = head.getNext();
+    }
+    if (size <= 1) {
+      tail = head;
+    }
+    size--;
+    return deletedData;
   }
 
   /**
@@ -62,6 +95,23 @@ public class SinglyLinkedList<T> {
    */
   public T removeFromBack() {
     // WRITE YOUR CODE HERE (DO NOT MODIFY METHOD HEADER)!
+    T deletedData;
+    if (size == 0) {
+      throw new NoSuchElementException();
+    } else if (size == 1) {
+      deletedData = head.getData();
+      head = tail = null;
+    } else {
+      SinglyLinkedListNode<T> current = head;
+      while (current.getNext().getNext() != null) {
+        current = current.getNext();
+      }
+      deletedData = current.getNext().getData();
+      current.setNext(null);
+      tail = current;
+    }
+    size--;
+    return deletedData;
   }
 
   /**
@@ -101,5 +151,40 @@ public class SinglyLinkedList<T> {
   public int size() {
     // DO NOT MODIFY THIS METHOD!
     return size;
+  }
+
+  // Testing
+  public static void main(String[] args) {
+    SinglyLinkedList<Integer> numList = new SinglyLinkedList<>();
+    for (int i = 6; i < 11; i++) {
+      numList.addToBack(i);
+      System.out.printf(
+        "Adding to rear. Added %d to list. ",
+        numList.getTail().getData()
+      );
+      System.out.printf("List size is now %d.\n", numList.size());
+    }
+    while (numList.size() > 0) {
+      System.out.printf(
+        "Removing from front. Removed %d from list, list size is now %d.\n",
+        numList.removeFromFront(),
+        numList.size()
+      );
+    }
+    for (int i = 5; i > 0; i--) {
+      numList.addToFront(i);
+      System.out.printf(
+        "Adding to front. Added %d to list. ",
+        numList.getHead().getData()
+      );
+      System.out.printf("List size is now %d.\n", numList.size());
+    }
+    while (numList.size() > 0) {
+      System.out.printf(
+        "Removing from rear. Removed %d from list, list size is now %d.\n",
+        numList.removeFromBack(),
+        numList.size()
+      );
+    }
   }
 }
