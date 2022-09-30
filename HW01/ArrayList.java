@@ -43,7 +43,7 @@ public class ArrayList<T> {
     // WRITE YOUR CODE HERE (DO NOT MODIFY METHOD HEADER)!
     if (data == null) {
       throw new IllegalArgumentException();
-    } else if (size != 0 && size % INITIAL_CAPACITY == 0) {
+    } else if (size != 0 && size % backingArray.length == 0) {
       resizeBackingArray();
     }
     for (int i = size; i > 0; i--) {
@@ -65,7 +65,7 @@ public class ArrayList<T> {
     // WRITE YOUR CODE HERE (DO NOT MODIFY METHOD HEADER)!
     if (data == null) {
       throw new IllegalArgumentException();
-    } else if (size != 0 && size % INITIAL_CAPACITY == 0) {
+    } else if (size != 0 && size % backingArray.length == 0) {
       resizeBackingArray();
     }
     backingArray[size] = data;
@@ -144,7 +144,7 @@ public class ArrayList<T> {
    */
   private void resizeBackingArray() {
     // WRITE YOUR CODE HERE (DO NOT MODIFY METHOD HEADER)!
-    T[] tempArray = (T[]) new Object[size * 2];
+    T[] tempArray = (T[]) new Object[backingArray.length * 2];
     for (int i = 0; i < size; i++) {
       tempArray[i] = backingArray[i];
     }

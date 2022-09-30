@@ -44,7 +44,15 @@ public class ArrayQueue<T> {
    */
   public void enqueue(T data) {
     // WRITE YOUR CODE HERE (DO NOT MODIFY METHOD HEADER)!
-
+    if (data == null) {
+      throw new IllegalArgumentException();
+    } else if (size != 0 && size % backingArray.length == 0) {
+      resize();
+      backingArray[size] = data;
+    } else {
+      backingArray[(front + size) % backingArray.length] = data;
+    }
+    size++;
   }
 
   /**
@@ -64,7 +72,15 @@ public class ArrayQueue<T> {
    */
   public T dequeue() {
     // WRITE YOUR CODE HERE (DO NOT MODIFY METHOD HEADER)!
-
+    if (size == 0) {
+      throw new NoSuchElementException();
+    } else {
+      T dequeuedValue = backingArray[front];
+      backingArray[front] = null;
+      front = (front + 1) % backingArray.length;
+      size--;
+      return dequeuedValue;
+    }
   }
 
   /**
@@ -95,5 +111,28 @@ public class ArrayQueue<T> {
 
   private void resize() {
     // WRITE YOUR CODE HERE (DO NOT MODIFY METHOD HEADER)!
+    T[] tempArray = (T[]) new Object[backingArray.length * 2];
+    for (int i = 0; i < size; i++) {
+      tempArray[i] = backingArray[(front + i) % backingArray.length];
+    }
+    backingArray = tempArray;
+    front = 0;
+  }
+
+  public static void main(String[] args) {
+    ArrayQueue<Integer> intQueue = new ArrayQueue<>();
+    for (int i = 0; i < 144; i++) {
+      intQueue.enqueue(i);
+    }
+    Object[] temp = intQueue.getBackingArray();
+    System.out.printf("ArrayQueue resized to: %d\n", temp.length);
+    System.out.print("Queue elements are: ");
+    for (int i = 0; i < 144; i++) {
+      System.out.print(intQueue.dequeue() + " ");
+    }
+    System.out.println();
+    intQueue.enqueue(1000);
+    System.out.println(intQueue.dequeue());
+    System.out.printf("ArrayQueue still at size: %d\n", temp.length);
   }
 }
