@@ -33,6 +33,20 @@ public class BST<T extends Comparable<? super T>> {
    */
   public void add(T data) {
     // WRITE YOUR CODE HERE (DO NOT MODIFY METHOD HEADER)!
+    if (data == null) throw new IllegalArgumentException();
+    root = rAdd(root, data);
+  }
+
+  private BSTNode<T> rAdd(BSTNode<T> node, T data) {
+    if (node == null) {
+      size++;
+      return new BSTNode<T>(data);
+    } else if (data < node.getData()) {
+      node.setLeft(rAdd(node.getLeft(), data));
+    } else if (data > node.getData()) {
+      node.setRight(rAdd(node.getRight(), data));
+    }
+    return node;
   }
 
   /**
