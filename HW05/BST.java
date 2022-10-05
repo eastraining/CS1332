@@ -41,9 +41,9 @@ public class BST<T extends Comparable<? super T>> {
     if (node == null) {
       size++;
       return new BSTNode<T>(data);
-    } else if (data < node.getData()) {
+    } else if (data.compareTo(node.getData()) < 0) {
       node.setLeft(rAdd(node.getLeft(), data));
-    } else if (data > node.getData()) {
+    } else if (data.compareTo(node.getData()) > 0) {
       node.setRight(rAdd(node.getRight(), data));
     }
     return node;
@@ -78,6 +78,42 @@ public class BST<T extends Comparable<? super T>> {
    */
   public T remove(T data) {
     // WRITE YOUR CODE HERE (DO NOT MODIFY METHOD HEADER)!
+    if (data == null) throw new IllegalArgumentException();
+    BSTNode<T> dummy = new BSTNode<>(null);
+    root = rRemove(root, data, dummy);
+    return dummy.getData();
+  }
+
+  private BSTNode<T> rRemove(BSTNode<T> node, T data, BSTNode<T> dummy) {
+    if (node == null) {
+      throw new NoSuchElementException();
+    } else if (data.compareTo(node.getData()) < 0) {
+      node.setLeft(rRemove(node.getLeft(), data, dummy));
+    } else if (data.compareTo(node.getData()) > 0) {
+      node.setRight(rRemove(node.getRight(), data, dummy));
+    } else {
+      dummy.setData(node.getData());
+      if (node.getLeft() == null) {
+        return node.getRight() == null ? null : node.getRight();
+      } else if (node.getRight() == null) {
+        return node.getLeft();
+      } else {
+        BSTNode<T> dummy2 = new BSTNode<>(null);
+        node.setRight(rSuccessor(node.getRight(), dummy2));
+        node.setData(dummy2.getData());
+      }
+    }
+    return node;
+  }
+
+  private BSTNode<T> rSuccessor(BSTNode<T> node, BSTNode<T> dummy) {
+    if (node.getLeft() == null) {
+      dummy.setData(node.getData());
+      return node.getRight() == null ? null : node.getRight();
+    } else {
+      node.setLeft(rSuccessor(node.getLeft(), dummy));
+    }
+    return node;
   }
 
   /**
@@ -105,4 +141,7 @@ public class BST<T extends Comparable<? super T>> {
     // DO NOT MODIFY THIS METHOD!
     return size;
   }
+
+  // Tests
+  public static void main(String[] args) {}
 }
