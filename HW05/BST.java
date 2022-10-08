@@ -145,7 +145,7 @@ public class BST<T extends Comparable<? super T>> {
   // Tests
   public void recurPreOrder(BSTNode<T> node) {
     if (node != null) {
-      System.out.printf("%d ", node.getData());
+      System.out.print(node.getData() + " ");
       recurPreOrder(node.getLeft());
       recurPreOrder(node.getRight());
     }
@@ -161,7 +161,7 @@ public class BST<T extends Comparable<? super T>> {
     BST<Integer> test = new BST<>();
     test.add(3);
     test.treeState();
-    System.out.printf("Item removed: %d\n", test.remove(3));
+    System.out.println("Item removed: " + test.remove(3));
 
     int[] testArr = { 50, 15, 75, 5, 100, 10 };
     for (int num : testArr) {
@@ -173,13 +173,13 @@ public class BST<T extends Comparable<? super T>> {
     test.add(25);
     test.treeState();
 
-    System.out.printf("Item removed: %d\n", test.remove(10));
+    System.out.println("Item removed: " + test.remove(10));
     test.treeState();
-    System.out.printf("Item removed: %d\n", test.remove(75));
+    System.out.println("Item removed: " + test.remove(75));
     test.treeState();
-    System.out.printf("Item removed: %d\n", test.remove(50));
+    System.out.println("Item removed: " + test.remove(50));
     test.treeState();
-    System.out.printf("Item removed: %d\n", test.remove(15));
+    System.out.println("Item removed: " + test.remove(15));
     test.treeState();
   }
 }
