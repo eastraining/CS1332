@@ -40,7 +40,11 @@ public class MinHeap<T extends Comparable<? super T>> {
    */
   public void add(T data) {
     // WRITE YOUR CODE HERE (DO NOT MODIFY METHOD HEADER)!
-
+    if (data == null) throw new IllegalArgumentException();
+    size++;
+    if (size > backingArray.length) resizeBackingArray();
+    backingArray[size] = data;
+    upHeap(size);
   }
 
   /**
@@ -55,7 +59,18 @@ public class MinHeap<T extends Comparable<? super T>> {
    */
   public T remove() {
     // WRITE YOUR CODE HERE (DO NOT MODIFY METHOD HEADER)!
-
+    if (size == 0) throw new NoSuchElementException();
+    T removedItem = backingArray[1];
+    if (size == 1) {
+      backingArray[1] = null;
+      size--;
+      return removedItem;
+    }
+    backingArray[1] = backingArray[size];
+    backingArray[size] = null;
+    size--;
+    downHeap(1);
+    return removedItem;
   }
 
   /**
@@ -82,5 +97,82 @@ public class MinHeap<T extends Comparable<? super T>> {
   public int size() {
     // DO NOT MODIFY THIS METHOD!
     return size;
+  }
+
+  private void resizeBackingArray() {
+    T[] tempArray = (T[]) new Comparable[backingArray.length * 2];
+    for (int i = 1; i < backingArray.length; i++) {
+      tempArray[i] = backingArray[i];
+    }
+    backingArray = tempArray;
+  }
+
+  private void swap(int firstIndex, int secondIndex) {
+    T temp = backingArray[firstIndex];
+    backingArray[firstIndex] = backingArray[secondIndex];
+    backingArray[secondIndex] = temp;
+  }
+
+  private void upHeap(int index) {
+    if (
+      index > 1 && backingArray[index / 2].compareTo(backingArray[index]) > 0
+    ) {
+      swap(index / 2, index);
+      upHeap(index / 2);
+    }
+  }
+
+  private void downHeap(int index) {
+    if (index <= size / 2) {
+      if (index * 2 + 1 > size) {
+        if (backingArray[index].compareTo(backingArray[index * 2]) > 0) {
+          swap(index, index * 2);
+          return;
+        }
+      }
+      int smallerChildIndex = backingArray[index * 2].compareTo(
+            backingArray[index * 2 + 1]
+          ) <
+        0
+        ? index * 2
+        : index * 2 + 1;
+      if (backingArray[index].compareTo(backingArray[smallerChildIndex]) > 0) {
+        swap(index, smallerChildIndex);
+        downHeap(smallerChildIndex);
+      }
+    }
+  }
+
+  // Tests
+  public void buildHeap(T[] items) {
+    size = items.length;
+    while (size >= backingArray.length) resizeBackingArray();
+
+    for (int i = 1; i <= size; i++) {
+      backingArray[i] = items[i - 1];
+    }
+    for (int i = size / 2; i > 0; i--) {
+      downHeap(i);
+    }
+  }
+
+  public void status() {
+    System.out.print("Heap status:");
+    for (int i = 1; i <= size; i++) {
+      System.out.print(" " + backingArray[i]);
+    }
+    System.out.println();
+  }
+
+  public static void main(String[] args) {
+    MinHeap<Integer> testHeap = new MinHeap<>();
+    Integer[] testArr1 = { 1, 3, 6, 7, 8, 9, 2, 4, 5 };
+    testHeap.buildHeap(testArr1);
+    testHeap.status();
+    testHeap.add(0);
+    testHeap.status();
+    for (int i = 0; i < 10; i++) {
+      System.out.println("Item removed: " + testHeap.remove());
+    }
   }
 }
