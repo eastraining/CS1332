@@ -70,7 +70,34 @@ public class ExternalChainingHashMap<K, V> {
    *         map, return the old value associated with it.
    * @throws java.lang.IllegalArgumentException If key or value is null.
    */
-  public V put(K key, V value) {}
+  public V put(K key, V value) {
+    if (key == null || value == null) throw new IllegalArgumentException();
+    size++;
+    if ((double) size / table.length > MAX_LOAD_FACTOR) resizeBackingTable(
+      table.length * 2 + 1
+    );
+    int index = Math.abs(key.hashCode() % table.length);
+    ExternalChainingMapEntry<K, V> current = table[index];
+    if (current == null) {
+      current = new ExternalChainingMapEntry<K, V>(key, value);
+      return null;
+    }
+    boolean foundKey = false;
+    V oldValue = null;
+    while (current != null) {
+      if (current.getKey().compareTo(key) == 0) {
+        oldValue = current.getValue();
+        current.setValue(value);
+        foundKey = true;
+        break;
+      }
+      current = current.getNext();
+    }
+    if (!foundKey) table[index].setNext(
+        new ExternalChainingMapEntry<K, V>(key, value, current.getNext())
+      );
+    return oldValue;
+  }
 
   /**
    * Removes the entry with a matching key from the map.
@@ -80,7 +107,31 @@ public class ExternalChainingHashMap<K, V> {
    * @throws java.lang.IllegalArgumentException If key is null.
    * @throws java.util.NoSuchElementException   If the key is not in the map.
    */
-  public V remove(K key) {}
+  public V remove(K key) {
+    if (key == null) throw new IllegalArgumentException();
+    int index = Math.abs(key.hashCode() % table.length);
+    ExternalChainingMapEntry<K, V> current = table[index];
+    if (current == null) {
+      throw new NoSuchElementException();
+    } else {
+      if (current.getKey().compareTo(key) == 0) {
+        V deletedValue = current.getValue();
+        size--;
+        current = current.getNext();
+        return deletedValue;
+      } else {
+        while (current.getNext() != null) {
+          if (current.getNext().getKey().compareTo(key) == 0) {
+            V deletedValue = current.getNext().getValue();
+            size--;
+            current.setNext(current.getNext().getNext());
+            return deletedValue;
+          }
+        }
+        throw new NoSuchElementException();
+      }
+    }
+  }
 
   /**
    * Helper method stub for resizing the backing table to length.
@@ -99,7 +150,34 @@ public class ExternalChainingHashMap<K, V> {
    *
    * @param length The new length of the backing table.
    */
-  private void resizeBackingTable(int length) {}
+  private void resizeBackingTable(int length) {
+    ExternalChainingMapEntry<K, V>[] tempTable = (ExternalChainingMapEntry<K, V>[]) new ExternalChainingMapEntry[length];
+    ExternalChainingMapEntry<K, V> current = null;
+    for (int i = 0; i < table.length; i++) {
+      current = table[i];
+      while (current != null) {
+        int index = Math.abs(current.getKey().hashCode() % length);
+        ExternalChainingMapEntry<K, V> newCurrent = tempTable[index];
+        if (newCurrent == null) {
+          newCurrent =
+            new ExternalChainingMapEntry<K, V>(
+              current.getKey(),
+              current.getValue()
+            );
+        } else {
+          newCurrent.setNext(
+            new ExternalChainingMapEntry<K, V>(
+              current.getKey(),
+              current.getValue(),
+              newCurrent.getNext()
+            )
+          );
+        }
+        current = current.getNext();
+      }
+    }
+    table = tempTable;
+  }
 
   /**
    * Returns the table of the map.
@@ -126,4 +204,7 @@ public class ExternalChainingHashMap<K, V> {
     // DO NOT MODIFY THIS METHOD!
     return size;
   }
+
+  // Tests
+  public static void main(String[] args) {}
 }
