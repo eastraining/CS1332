@@ -79,13 +79,13 @@ public class ExternalChainingHashMap<K, V> {
     int index = Math.abs(key.hashCode() % table.length);
     ExternalChainingMapEntry<K, V> current = table[index];
     if (current == null) {
-      current = new ExternalChainingMapEntry<K, V>(key, value);
+      table[index] = new ExternalChainingMapEntry<K, V>(key, value);
       return null;
     }
     boolean foundKey = false;
     V oldValue = null;
     while (current != null) {
-      if (current.getKey().compareTo(key) == 0) {
+      if (current.getKey().equals(key)) {
         oldValue = current.getValue();
         current.setValue(value);
         foundKey = true;
@@ -93,9 +93,9 @@ public class ExternalChainingHashMap<K, V> {
       }
       current = current.getNext();
     }
-    if (!foundKey) table[index].setNext(
-        new ExternalChainingMapEntry<K, V>(key, value, current.getNext())
-      );
+    if (!foundKey) table[index] =
+      new ExternalChainingMapEntry<K, V>(key, value, table[index]);
+
     return oldValue;
   }
 
@@ -114,14 +114,14 @@ public class ExternalChainingHashMap<K, V> {
     if (current == null) {
       throw new NoSuchElementException();
     } else {
-      if (current.getKey().compareTo(key) == 0) {
+      if (current.getKey().equals(key)) {
         V deletedValue = current.getValue();
         size--;
-        current = current.getNext();
+        table[index] = current.getNext();
         return deletedValue;
       } else {
         while (current.getNext() != null) {
-          if (current.getNext().getKey().compareTo(key) == 0) {
+          if (current.getNext().getKey().equals(key)) {
             V deletedValue = current.getNext().getValue();
             size--;
             current.setNext(current.getNext().getNext());
@@ -159,19 +159,18 @@ public class ExternalChainingHashMap<K, V> {
         int index = Math.abs(current.getKey().hashCode() % length);
         ExternalChainingMapEntry<K, V> newCurrent = tempTable[index];
         if (newCurrent == null) {
-          newCurrent =
+          tempTable[index] =
             new ExternalChainingMapEntry<K, V>(
               current.getKey(),
               current.getValue()
             );
         } else {
-          newCurrent.setNext(
+          tempTable[index] =
             new ExternalChainingMapEntry<K, V>(
               current.getKey(),
               current.getValue(),
-              newCurrent.getNext()
-            )
-          );
+              tempTable[index]
+            );
         }
         current = current.getNext();
       }
@@ -206,5 +205,64 @@ public class ExternalChainingHashMap<K, V> {
   }
 
   // Tests
-  public static void main(String[] args) {}
+  public void printAtIndex(int index) {
+    System.out.print("Status at index " + index + " is:");
+    ExternalChainingMapEntry<K, V> current = table[index];
+    while (current != null) {
+      System.out.print(" " + current);
+      current = current.getNext();
+    }
+    System.out.println();
+  }
+
+  public static void main(String[] args) {
+    ExternalChainingHashMap<Integer, Integer> test = new ExternalChainingHashMap<>();
+
+    // 1: Put where no elements at hashed index
+    test.put(5, 5);
+    test.printAtIndex(5);
+
+    // 2: Put where elements are at hashed index
+    int[] testArr = { 19, 6, 8, 11, 25, 32 };
+    for (int item : testArr) test.put(item, item);
+    test.printAtIndex(6);
+
+    // 3: If key is duplicate, simply replace the value and return the old value;
+    System.out.println(
+      "Value updated for key 19. Old value replaced: " + test.put(19, 21)
+    );
+    test.printAtIndex(6);
+
+    // 4: Simple remove
+    System.out.println("Key 5 removed. Result is: " + test.remove(5));
+    test.printAtIndex(5);
+
+    // 5: Remove from chain
+    System.out.println("Key 6 removed. Result is " + test.remove(6));
+    test.printAtIndex(6);
+
+    // 6: Successful resize
+    for (int i = 0; i < 11; i++) {
+      test.put(i, i);
+    }
+    System.out.printf(
+      "New size %d, new backing array size %d\nEach node status:\n",
+      test.size(),
+      test.table.length
+    );
+    for (int i = 0; i < test.table.length; i++) {
+      test.printAtIndex(i);
+    }
+
+    test.put(39, 39);
+    test.put(50, 50);
+    System.out.printf(
+      "New size %d, new backing array size %d\nEach node status:\n",
+      test.size(),
+      test.table.length
+    );
+    for (int i = 0; i < test.table.length; i++) {
+      test.printAtIndex(i);
+    }
+  }
 }
