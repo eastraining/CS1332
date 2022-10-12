@@ -215,6 +215,17 @@ public class ExternalChainingHashMap<K, V> {
     System.out.println();
   }
 
+  public void printMap() {
+    System.out.printf(
+      "New size %d, new backing array size %d\nEach node status:\n",
+      size,
+      table.length
+    );
+    for (int i = 0; i < table.length; i++) {
+      printAtIndex(i);
+    }
+  }
+
   public static void main(String[] args) {
     ExternalChainingHashMap<Integer, Integer> test = new ExternalChainingHashMap<>();
 
@@ -242,27 +253,12 @@ public class ExternalChainingHashMap<K, V> {
     test.printAtIndex(6);
 
     // 6: Successful resize
-    for (int i = 0; i < 11; i++) {
+    for (int i = 0; i < 12; i++) {
       test.put(i, i);
     }
-    System.out.printf(
-      "New size %d, new backing array size %d\nEach node status:\n",
-      test.size(),
-      test.table.length
-    );
-    for (int i = 0; i < test.table.length; i++) {
-      test.printAtIndex(i);
-    }
+    test.printMap();
 
-    test.put(39, 39);
-    test.put(50, 50);
-    System.out.printf(
-      "New size %d, new backing array size %d\nEach node status:\n",
-      test.size(),
-      test.table.length
-    );
-    for (int i = 0; i < test.table.length; i++) {
-      test.printAtIndex(i);
-    }
+    test.put(47, 47);
+    test.printMap();
   }
 }
