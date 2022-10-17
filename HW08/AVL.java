@@ -33,7 +33,27 @@ public class AVL<T extends Comparable<? super T>> {
    * @param data The data to add.
    * @throws java.lang.IllegalArgumentException If data is null.
    */
-  public void add(T data) {}
+  public void add(T data) {
+    if (data == null) throw new IllegalArgumentException();
+    root = rAdd(root, data);
+  }
+
+  private AVLNode<T> rAdd(AVLNode<T> node, T data) {
+    if (node == null) {
+      AVLNode<T> newNode = new AVLNode<>(data);
+      balance(newNode);
+      size++;
+      return newNode;
+    } else if (node.getData().compareTo(data) == 0) {
+      return node;
+    } else if (node.getData().compareTo(data) > 0) {
+      node.setLeft(rAdd(node.getLeft(), data));
+    } else {
+      node.setRight(rAdd(node.getRight(), data));
+    }
+    balance(node);
+    return node;
+  }
 
   /**
    * Removes and returns the element from the tree matching the given
@@ -64,7 +84,51 @@ public class AVL<T extends Comparable<? super T>> {
    * @throws java.lang.IllegalArgumentException If the data is null.
    * @throws java.util.NoSuchElementException   If the data is not found.
    */
-  public T remove(T data) {}
+  public T remove(T data) {
+    if (data == null) throw new IllegalArgumentException();
+    AVLNode<T> dummy = new AVLNode<>(null);
+    root = rRemove(root, data, dummy);
+    if (dummy.getData() == null) throw new NoSuchElementException();
+    return dummy.getData();
+  }
+
+  private AVLNode<T> rRemove(AVLNode<T> node, T data, AVLNode<T> dummy) {
+    if (node == null) return null;
+    if (node.getData().compareTo(data) == 0) {
+      dummy.setData(node.getData());
+      size--;
+      if (node.getLeft() == null) {
+        if (node.getRight() == null) {
+          return null;
+        } else {
+          return node.getRight();
+        }
+      } else if (node.getRight == null) {
+        return node.getLeft();
+      } else {
+        AVLNode<T> dummy2 = new AVLNode<>(null);
+        node.setRight(rRemoveSuccessor(node.getRight(), dummy2));
+        node.setData(dummy2.getData());
+      }
+    } else if (node.getData().compareTo(data) > 0) {
+      node.setLeft(rRemove(node.getLeft(), data, dummy));
+    } else {
+      node.setRight(rRemove(node.getRight(), data, dummy));
+    }
+    balance(node);
+    return node;
+  }
+
+  private AVLNode<T> rRemoveSuccessor(AVLNode<T> node, AVLNode<T> dummy) {
+    if (node.getLeft() == null) {
+      dummy.setData(node.getData());
+      return node.getRight();
+    } else {
+      node.setLeft(node.getLeft(), dummy);
+      balance(node);
+      return node;
+    }
+  }
 
   /**
    * Updates the height and balance factor of a node using its
@@ -86,7 +150,17 @@ public class AVL<T extends Comparable<? super T>> {
    *
    * @param currentNode The node to update the height and balance factor of.
    */
-  private void updateHeightAndBF(AVLNode<T> currentNode) {}
+  private void updateHeightAndBF(AVLNode<T> currentNode) {
+    int leftChildHeight = currentNode.getLeft() == null
+      ? -1
+      : currentNode.getLeft().getHeight();
+    int rightChildHeight = currentNode.getRight() == null
+      ? -1
+      : currentNode.getRight().getHeight();
+
+    currentNode.setHeight(Math.max(leftChildHeight, rightChildHeight) + 1);
+    currentNode.setBalanceFactor(leftChildHeight - rightChildHeight);
+  }
 
   /**
    * Method that rotates a current node to the left. After saving the
@@ -109,7 +183,14 @@ public class AVL<T extends Comparable<? super T>> {
    * @param currentNode The current node under inspection that will rotate.
    * @return The parent of the node passed in (after the rotation).
    */
-  private AVLNode<T> rotateLeft(AVLNode<T> currentNode) {}
+  private AVLNode<T> rotateLeft(AVLNode<T> currentNode) {
+    AVLNode<T> newSubRoot = currentNode.getRight();
+    currentNode.setRight(newSubRoot.getLeft());
+    newSubRoot.setLeft(currentNode);
+    updateHeightAndBF(currentNode);
+    updateHeightAndBF(newSubRoot);
+    return newSubRoot;
+  }
 
   /**
    * Method that rotates a current node to the right. After saving the
@@ -132,7 +213,14 @@ public class AVL<T extends Comparable<? super T>> {
    * @param currentNode The current node under inspection that will rotate.
    * @return The parent of the node passed in (after the rotation).
    */
-  private AVLNode<T> rotateRight(AVLNode<T> currentNode) {}
+  private AVLNode<T> rotateRight(AVLNode<T> currentNode) {
+    AVLNode<T> newSubRoot = currentNode.getLeft();
+    currentNode.setLeft(newSubRoot.getRight());
+    newSubRoot.setRight(currentNode);
+    updateHeightAndBF(currentNode);
+    updateHeightAndBF(newSubRoot);
+    return newSubRoot;
+  }
 
   /**
    * Method that balances out the tree starting at the node passed in.
@@ -152,7 +240,20 @@ public class AVL<T extends Comparable<? super T>> {
    * @param currentNode The current node under inspection.
    * @return The AVLNode that the caller should return.
    */
-  private AVLNode<T> balance(AVLNode<T> currentNode) {}
+  private AVLNode<T> balance(AVLNode<T> currentNode) {
+    updateHeightAndBF(currentNode);
+    if (currentNode.getBalanceFactor() > 1) {
+      if (currentNode.getLeft().getBalanceFactor() < 0) {
+        currentNode.setLeft(rotateLeft(currentNode.getLeft()));
+      }
+      return rotateRight(currentNode);
+    } else if (currentNode.getBalanceFactor() < -1) {
+      if (currentNode.getRight().getBalanceFactor() > 0) {
+        currentNode.setRight(rotateRight(currentNode.getRight()));
+      }
+      return rotateLeft(currentNode);
+    }
+  }
 
   /**
    * Returns the root of the tree.
