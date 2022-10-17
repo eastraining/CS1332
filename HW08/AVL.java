@@ -41,18 +41,17 @@ public class AVL<T extends Comparable<? super T>> {
   private AVLNode<T> rAdd(AVLNode<T> node, T data) {
     if (node == null) {
       AVLNode<T> newNode = new AVLNode<>(data);
-      balance(newNode);
       size++;
-      return newNode;
+      return balance(newNode);
     } else if (node.getData().compareTo(data) == 0) {
+      System.out.println("Hit equality.");
       return node;
     } else if (node.getData().compareTo(data) > 0) {
       node.setLeft(rAdd(node.getLeft(), data));
     } else {
       node.setRight(rAdd(node.getRight(), data));
     }
-    balance(node);
-    return node;
+    return balance(node);
   }
 
   /**
@@ -103,7 +102,7 @@ public class AVL<T extends Comparable<? super T>> {
         } else {
           return node.getRight();
         }
-      } else if (node.getRight == null) {
+      } else if (node.getRight() == null) {
         return node.getLeft();
       } else {
         AVLNode<T> dummy2 = new AVLNode<>(null);
@@ -115,8 +114,7 @@ public class AVL<T extends Comparable<? super T>> {
     } else {
       node.setRight(rRemove(node.getRight(), data, dummy));
     }
-    balance(node);
-    return node;
+    return balance(node);
   }
 
   private AVLNode<T> rRemoveSuccessor(AVLNode<T> node, AVLNode<T> dummy) {
@@ -124,9 +122,8 @@ public class AVL<T extends Comparable<? super T>> {
       dummy.setData(node.getData());
       return node.getRight();
     } else {
-      node.setLeft(node.getLeft(), dummy);
-      balance(node);
-      return node;
+      node.setLeft(rRemoveSuccessor(node.getLeft(), dummy));
+      return balance(node);
     }
   }
 
@@ -253,6 +250,7 @@ public class AVL<T extends Comparable<? super T>> {
       }
       return rotateLeft(currentNode);
     }
+    return currentNode;
   }
 
   /**
@@ -279,5 +277,47 @@ public class AVL<T extends Comparable<? super T>> {
   public int size() {
     // DO NOT MODIFY THIS METHOD!
     return size;
+  }
+
+  // Tests
+  private void recurPreOrder(AVLNode<T> node) {
+    if (node != null) {
+      System.out.print(node.getData() + " ");
+      recurPreOrder(node.getLeft());
+      recurPreOrder(node.getRight());
+    }
+  }
+
+  public void treeState() {
+    System.out.printf("Tree size: %d. ", size);
+    System.out.print("Tree contains: ");
+    recurPreOrder(root);
+    System.out.println();
+  }
+
+  public static void main(String[] args) {
+    AVL<Integer> test = new AVL<>();
+    test.add(3);
+    test.treeState();
+    System.out.println("Item removed: " + test.remove(3));
+
+    int[] testArr = { 50, 15, 75, 5, 100, 10 };
+    for (int num : testArr) {
+      test.add(num);
+      test.treeState();
+    }
+
+    System.out.println("Item added: 25");
+    test.add(25);
+    test.treeState();
+
+    System.out.println("Item removed: " + test.remove(10));
+    test.treeState();
+    System.out.println("Item removed: " + test.remove(75));
+    test.treeState();
+    System.out.println("Item removed: " + test.remove(50));
+    test.treeState();
+    System.out.println("Item removed: " + test.remove(15));
+    test.treeState();
   }
 }
