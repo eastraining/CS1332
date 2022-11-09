@@ -29,7 +29,52 @@ public class PatternMatching {
     CharSequence pattern,
     CharSequence text,
     CharacterComparator comparator
-  ) {}
+  ) {
+    int patternLength = pattern.length(), textLength = text.length();
+    List<Integer> matches = new LinkedList<Integer>();
+    if (patternLength > textLength) return matches;
+
+    Map<Character, Integer> lastTable = buildLastTable(pattern);
+    int currentText = patternLength - 1, currentPattern = patternLength - 1;
+
+    while (currentText < textLength) {
+      while (currentPattern >= 0) {
+        if (
+          comparator.compare(
+            text.charAt(currentText),
+            pattern.charAt(currentPattern)
+          ) ==
+          0
+        ) {
+          currentText--;
+          currentPattern--;
+        } else {
+          break;
+        }
+      }
+      if (currentPattern < 0) {
+        currentText++;
+        matches.add(currentText);
+        currentText += patternLength;
+        currentPattern = patternLength - 1;
+        continue;
+      }
+      int lastAt = lastTable.getOrDefault(text.charAt(currentText), -1);
+      if (lastAt < 0) {
+        currentText += patternLength;
+        currentPattern = patternLength - 1;
+      } else if (lastAt < currentPattern) {
+        int difference = currentPattern - lastAt;
+        currentText += difference;
+        currentPattern = patternLength - 1;
+      } else {
+        int difference = patternLength - currentPattern;
+        currentText += difference;
+        currentPattern = patternLength - 1;
+      }
+    }
+    return matches;
+  }
 
   /**
    * Builds the last occurrence table that will be used to run the Boyer Moore algorithm.
@@ -56,5 +101,51 @@ public class PatternMatching {
    * @return A Map with keys of all of the characters in the pattern mapping
    *         to their last occurrence in the pattern.
    */
-  public static Map<Character, Integer> buildLastTable(CharSequence pattern) {}
+  public static Map<Character, Integer> buildLastTable(CharSequence pattern) {
+    Map<Character, Integer> lastTable = new HashMap<>();
+    for (int i = 0; i < pattern.length(); i++) {
+      lastTable.put(pattern.charAt(i), i);
+    }
+    return lastTable;
+  }
+
+  // Tests
+  private static void printResults(
+    List<Integer> results,
+    CharacterComparator comparator,
+    int cumulative
+  ) {
+    System.out.print("Pattern found at indices: ");
+    for (Integer result : results) {
+      System.out.print(result + " ");
+    }
+    int compares = comparator.getComparisonCount() - cumulative;
+    System.out.println("Compares: " + compares);
+  }
+
+  public static void main(String[] args) {
+    CharacterComparator comparator = new CharacterComparator();
+    String text = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaab";
+    String text2 = "aaaaabaaaaabaaaaabcaaaaab";
+    String pattern1 = "aaaaab";
+    String pattern2 = "baaaaa";
+    String pattern3 = "cccccc";
+    int cumulative = 0;
+
+    List<Integer> result1 = boyerMoore(pattern1, text, comparator);
+    printResults(result1, comparator, cumulative);
+    cumulative = comparator.getComparisonCount();
+
+    List<Integer> result2 = boyerMoore(pattern2, text, comparator);
+    printResults(result2, comparator, cumulative);
+    cumulative = comparator.getComparisonCount();
+
+    List<Integer> result3 = boyerMoore(pattern3, text, comparator);
+    printResults(result3, comparator, cumulative);
+    cumulative = comparator.getComparisonCount();
+
+    List<Integer> result4 = boyerMoore(pattern1, text2, comparator);
+    printResults(result4, comparator, cumulative);
+    cumulative = comparator.getComparisonCount();
+  }
 }
