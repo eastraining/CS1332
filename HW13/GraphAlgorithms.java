@@ -16,7 +16,7 @@ public class GraphAlgorithms {
    * Performs a breadth first search (bfs) on the input graph, starting at
    * the parameterized starting vertex.
    *
-   * When exploring a vertex, explore in the order of neighbors returned by
+   * When exploring a vertex, explore in the order of toVisit returned by
    * the adjacency list. Failure to do so may cause you to lose points.
    *
    * You may import/use java.util.Set, java.util.List, java.util.Queue, and
@@ -38,13 +38,30 @@ public class GraphAlgorithms {
    * @param graph The graph to search through.
    * @return List of vertices in visited order.
    */
-  public static <T> List<Vertex<T>> bfs(Vertex<T> start, Graph<T> graph) {}
+  public static <T> List<Vertex<T>> bfs(Vertex<T> start, Graph<T> graph) {
+    Set<Vertex<T>> visited = new HashSet();
+    Queue<Vertex<T>> toVisit = new ArrayDeque();
+    Map<Vertex<T>, List<VertexDistance<T>>> adjList = graph.getAdjList();
+    toVisit.add(start);
+    while (toVisit.peek() != null) {
+      Vertex<T> current = toVisit.poll();
+      visited.add(current);
+      List<VertexDistance<T>> adjVertices = adjList.get(current);
+      for (VertexDistance<T> adjVertex : adjVertices) {
+        Vertex<T> neighbor = adjVertex.getVertex();
+        if (!visited.contains(neighbor)) {
+          toVisit.add(neighbor);
+        }
+      }
+    }
+    return (List) new ArrayList(visited);
+  }
 
   /**
    * Performs a depth first search (dfs) on the input graph, starting at
    * the parameterized starting vertex.
    *
-   * When exploring a vertex, explore in the order of neighbors returned by
+   * When exploring a vertex, explore in the order of toVisit returned by
    * the adjacency list. Failure to do so may cause you to lose points.
    *
    * NOTE: This method should be implemented recursively. You may need to
@@ -68,5 +85,7 @@ public class GraphAlgorithms {
    * @param graph The graph to search through.
    * @return List of vertices in visited order.
    */
-  public static <T> List<Vertex<T>> dfs(Vertex<T> start, Graph<T> graph) {}
+  public static <T> List<Vertex<T>> dfs(Vertex<T> start, Graph<T> graph) {
+    return null;
+  }
 }
