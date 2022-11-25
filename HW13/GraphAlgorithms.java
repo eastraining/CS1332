@@ -88,4 +88,17 @@ public class GraphAlgorithms {
   public static <T> List<Vertex<T>> dfs(Vertex<T> start, Graph<T> graph) {
     return null;
   }
+
+  // Tests
+  public static void main(String[] args) {
+    String[] verticesArray = { "A", "B", "C", "D", "E", "F", "G", "H" };
+    Set<Vertex<String>> vertices = new HashSet();
+    for (String v : verticesArray) {
+      vertices.add(new Vertex<String>(v));
+    }
+
+    Set<Edge<String>> edges = new HashSet();
+
+    Graph<String> test = new Graph();
+  }
 }
