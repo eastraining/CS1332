@@ -1,6 +1,8 @@
 import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -90,10 +92,11 @@ public class GraphAlgorithms {
   }
 
   // Tests
-  public static void printList(List<T> list) {
-    print("List contains: ");
-    while (list.hasNext()) {
-      print(list.next() + " ");
+  public static <T> void printList(List<T> list) {
+    System.out.print("List contains: ");
+    Iterator<T> values = list.iterator();
+    while (values.hasNext()) {
+      System.out.print(values.next() + " ");
     }
   }
 
@@ -107,10 +110,9 @@ public class GraphAlgorithms {
       verticesMap.put(values[i], temp);
     }
 
-    Set<Edge<String>> edges = new HashSet();
+    Set<Edge<String>> edges = new HashSet<>();
 
-    Graph<String> test = new Graph(vertices, edges);
-
-    List<Vertex<T>> bfsResult = GraphAlgorithms.bfs(test);
+    Graph<String> test = new Graph<>(vertices, edges);
+    // List<Vertex<T>> bfsResult = GraphAlgorithms.bfs();
   }
 }
