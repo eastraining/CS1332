@@ -41,22 +41,29 @@ public class GraphAlgorithms {
    * @return List of vertices in visited order.
    */
   public static <T> List<Vertex<T>> bfs(Vertex<T> start, Graph<T> graph) {
-    Set<Vertex<T>> visited = new HashSet();
-    Queue<Vertex<T>> toVisit = new ArrayDeque();
+    Set<Vertex<T>> visited = new HashSet<>();
+    Queue<Vertex<T>> toVisit = new ArrayDeque<>();
+    List<Vertex<T>> visitedOrder = new ArrayList<>();
     Map<Vertex<T>, List<VertexDistance<T>>> adjList = graph.getAdjList();
     toVisit.add(start);
     while (toVisit.peek() != null) {
       Vertex<T> current = toVisit.poll();
-      visited.add(current);
+      // System.out.println(current);
+      if (!visited.contains(current)) {
+        visited.add(current);
+        visitedOrder.add(current);
+      }
+
       List<VertexDistance<T>> adjVertices = adjList.get(current);
       for (VertexDistance<T> adjVertex : adjVertices) {
         Vertex<T> neighbor = adjVertex.getVertex();
+        System.out.println(neighbor);
         if (!visited.contains(neighbor)) {
           toVisit.add(neighbor);
         }
       }
     }
-    return (List) new ArrayList(visited);
+    return visitedOrder;
   }
 
   /**
@@ -98,21 +105,47 @@ public class GraphAlgorithms {
     while (values.hasNext()) {
       System.out.print(values.next() + " ");
     }
+    System.out.println();
   }
 
   public static void main(String[] args) {
     String[] values = { "A", "B", "C", "D", "E", "F", "G", "H" };
     Set<Vertex<String>> vertices = new HashSet<>();
-    Map<String, Vertex<String>> verticesMap = new HashMap<>();
+    Map<String, Vertex<String>> vMap = new HashMap<>();
     for (int i = 0; i < values.length; i++) {
       Vertex<String> temp = new Vertex<String>(values[i]);
       vertices.add(temp);
-      verticesMap.put(values[i], temp);
+      vMap.put(values[i], temp);
     }
 
     Set<Edge<String>> edges = new HashSet<>();
+    edges.add(new Edge<String>(vMap.get("A"), vMap.get("D"), 1));
+    edges.add(new Edge<String>(vMap.get("A"), vMap.get("D"), 20));
+    edges.add(new Edge<String>(vMap.get("A"), vMap.get("E"), 1));
+    edges.add(new Edge<String>(vMap.get("B"), vMap.get("C"), 1));
+    edges.add(new Edge<String>(vMap.get("B"), vMap.get("D"), 1));
+    edges.add(new Edge<String>(vMap.get("C"), vMap.get("B"), 1));
+    edges.add(new Edge<String>(vMap.get("C"), vMap.get("E"), 1));
+    edges.add(new Edge<String>(vMap.get("C"), vMap.get("F"), 1));
+    edges.add(new Edge<String>(vMap.get("D"), vMap.get("F"), 1));
+    edges.add(new Edge<String>(vMap.get("D"), vMap.get("H"), 1));
+    edges.add(new Edge<String>(vMap.get("E"), vMap.get("G"), 1));
+    edges.add(new Edge<String>(vMap.get("F"), vMap.get("B"), 1));
+    edges.add(new Edge<String>(vMap.get("F"), vMap.get("D"), 1));
+    edges.add(new Edge<String>(vMap.get("G"), vMap.get("C"), 1));
+    edges.add(new Edge<String>(vMap.get("G"), vMap.get("E"), 1));
+    edges.add(new Edge<String>(vMap.get("H"), vMap.get("G"), 1));
 
     Graph<String> test = new Graph<>(vertices, edges);
-    // List<Vertex<T>> bfsResult = GraphAlgorithms.bfs();
+    List<Vertex<String>> bfsResultFromA = GraphAlgorithms.bfs(
+      vMap.get("A"),
+      test
+    );
+    printList(bfsResultFromA);
+    List<Vertex<String>> bfsResultFromB = GraphAlgorithms.bfs(
+      vMap.get("B"),
+      test
+    );
+    printList(bfsResultFromB);
   }
 }
