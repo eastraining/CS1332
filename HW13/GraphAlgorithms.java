@@ -90,15 +90,27 @@ public class GraphAlgorithms {
   }
 
   // Tests
+  public static void printList(List<T> list) {
+    print("List contains: ");
+    while (list.hasNext()) {
+      print(list.next() + " ");
+    }
+  }
+
   public static void main(String[] args) {
-    String[] verticesArray = { "A", "B", "C", "D", "E", "F", "G", "H" };
-    Set<Vertex<String>> vertices = new HashSet();
-    for (String v : verticesArray) {
-      vertices.add(new Vertex<String>(v));
+    String[] values = { "A", "B", "C", "D", "E", "F", "G", "H" };
+    Set<Vertex<String>> vertices = new HashSet<>();
+    Map<String, Vertex<String>> verticesMap = new HashMap<>();
+    for (int i = 0; i < values.length; i++) {
+      Vertex<String> temp = new Vertex<String>(values[i]);
+      vertices.add(temp);
+      verticesMap.put(values[i], temp);
     }
 
     Set<Edge<String>> edges = new HashSet();
 
-    Graph<String> test = new Graph();
+    Graph<String> test = new Graph(vertices, edges);
+
+    List<Vertex<T>> bfsResult = GraphAlgorithms.bfs(test);
   }
 }
