@@ -48,7 +48,6 @@ public class GraphAlgorithms {
     toVisit.add(start);
     while (toVisit.peek() != null) {
       Vertex<T> current = toVisit.poll();
-      // System.out.println(current);
       if (!visited.contains(current)) {
         visited.add(current);
         visitedOrder.add(current);
@@ -57,7 +56,6 @@ public class GraphAlgorithms {
       List<VertexDistance<T>> adjVertices = adjList.get(current);
       for (VertexDistance<T> adjVertex : adjVertices) {
         Vertex<T> neighbor = adjVertex.getVertex();
-        System.out.println(neighbor);
         if (!visited.contains(neighbor)) {
           toVisit.add(neighbor);
         }
@@ -95,8 +93,10 @@ public class GraphAlgorithms {
    * @return List of vertices in visited order.
    */
   public static <T> List<Vertex<T>> dfs(Vertex<T> start, Graph<T> graph) {
-    return null;
+    List<Vertex<T>> visitedOrder = new ArrayList<>();
   }
+
+  private static <T> Vertex<T> rDfs(Vertex<T> start, Graph<T> graph, )
 
   // Tests
   public static <T> void printList(List<T> list) {
@@ -119,33 +119,39 @@ public class GraphAlgorithms {
     }
 
     Set<Edge<String>> edges = new HashSet<>();
+    edges.add(new Edge<String>(vMap.get("A"), vMap.get("B"), 1));
+    edges.add(new Edge<String>(vMap.get("B"), vMap.get("A"), 1));
+    edges.add(new Edge<String>(vMap.get("A"), vMap.get("C"), 1));
+    edges.add(new Edge<String>(vMap.get("C"), vMap.get("A"), 1));
     edges.add(new Edge<String>(vMap.get("A"), vMap.get("D"), 1));
-    edges.add(new Edge<String>(vMap.get("A"), vMap.get("D"), 20));
+    edges.add(new Edge<String>(vMap.get("D"), vMap.get("A"), 1));
     edges.add(new Edge<String>(vMap.get("A"), vMap.get("E"), 1));
-    edges.add(new Edge<String>(vMap.get("B"), vMap.get("C"), 1));
-    edges.add(new Edge<String>(vMap.get("B"), vMap.get("D"), 1));
-    edges.add(new Edge<String>(vMap.get("C"), vMap.get("B"), 1));
-    edges.add(new Edge<String>(vMap.get("C"), vMap.get("E"), 1));
-    edges.add(new Edge<String>(vMap.get("C"), vMap.get("F"), 1));
+    edges.add(new Edge<String>(vMap.get("E"), vMap.get("A"), 1));
     edges.add(new Edge<String>(vMap.get("D"), vMap.get("F"), 1));
-    edges.add(new Edge<String>(vMap.get("D"), vMap.get("H"), 1));
-    edges.add(new Edge<String>(vMap.get("E"), vMap.get("G"), 1));
-    edges.add(new Edge<String>(vMap.get("F"), vMap.get("B"), 1));
     edges.add(new Edge<String>(vMap.get("F"), vMap.get("D"), 1));
-    edges.add(new Edge<String>(vMap.get("G"), vMap.get("C"), 1));
+    edges.add(new Edge<String>(vMap.get("E"), vMap.get("G"), 1));
     edges.add(new Edge<String>(vMap.get("G"), vMap.get("E"), 1));
+    edges.add(new Edge<String>(vMap.get("B"), vMap.get("G"), 1));
+    edges.add(new Edge<String>(vMap.get("G"), vMap.get("B"), 1));
+    edges.add(new Edge<String>(vMap.get("E"), vMap.get("G"), 1));
+    edges.add(new Edge<String>(vMap.get("G"), vMap.get("E"), 1));
+    edges.add(new Edge<String>(vMap.get("F"), vMap.get("G"), 1));
+    edges.add(new Edge<String>(vMap.get("G"), vMap.get("F"), 1));
     edges.add(new Edge<String>(vMap.get("H"), vMap.get("G"), 1));
+    edges.add(new Edge<String>(vMap.get("G"), vMap.get("H"), 1));
 
     Graph<String> test = new Graph<>(vertices, edges);
     List<Vertex<String>> bfsResultFromA = GraphAlgorithms.bfs(
       vMap.get("A"),
       test
     );
+    System.out.print("Test 1: Simple graph bfs starting with \"A\". ");
     printList(bfsResultFromA);
     List<Vertex<String>> bfsResultFromB = GraphAlgorithms.bfs(
       vMap.get("B"),
       test
     );
+    System.out.print("Test 2: Simple graph bfs starting with \"B\". ");
     printList(bfsResultFromB);
   }
 }
