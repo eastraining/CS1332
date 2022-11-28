@@ -46,7 +46,9 @@ public class GraphAlgorithms {
     List<Vertex<T>> visitedOrder = new ArrayList<>();
     Map<Vertex<T>, List<VertexDistance<T>>> adjList = graph.getAdjList();
     toVisit.add(start);
-    while (toVisit.peek() != null) {
+    while (
+      toVisit.peek() != null && graph.getVertices().size() > visited.size()
+    ) {
       Vertex<T> current = toVisit.poll();
       if (!visited.contains(current)) {
         visited.add(current);
@@ -94,9 +96,33 @@ public class GraphAlgorithms {
    */
   public static <T> List<Vertex<T>> dfs(Vertex<T> start, Graph<T> graph) {
     List<Vertex<T>> visitedOrder = new ArrayList<>();
+    Set<Vertex<T>> visited = new HashSet<>();
+    rDfs(start, graph, visitedOrder, visited);
+    return visitedOrder;
   }
 
-  private static <T> Vertex<T> rDfs(Vertex<T> start, Graph<T> graph, )
+  private static <T> void rDfs(
+    Vertex<T> current,
+    Graph<T> graph,
+    List<Vertex<T>> visitedOrder,
+    Set<Vertex<T>> visited
+  ) {
+    if (visited.size() == graph.getVertices().size()) return;
+    if (visited.contains(current)) return;
+
+    Map<Vertex<T>, List<VertexDistance<T>>> adjList = graph.getAdjList();
+    List<VertexDistance<T>> adjVertices = adjList.get(current);
+
+    visited.add(current);
+    visitedOrder.add(current);
+    for (VertexDistance<T> adjVertex : adjVertices) {
+      Vertex<T> neighbor = adjVertex.getVertex();
+      if (!visited.contains(neighbor)) {
+        rDfs(neighbor, graph, visitedOrder, visited);
+      }
+      if (visited.size() == graph.getVertices().size()) return;
+    }
+  }
 
   // Tests
   public static <T> void printList(List<T> list) {
@@ -153,5 +179,17 @@ public class GraphAlgorithms {
     );
     System.out.print("Test 2: Simple graph bfs starting with \"B\". ");
     printList(bfsResultFromB);
+    List<Vertex<String>> dfsResultFromA = GraphAlgorithms.dfs(
+      vMap.get("A"),
+      test
+    );
+    System.out.print("Test 3: Simple graph dfs starting with \"A\". ");
+    printList(dfsResultFromA);
+    List<Vertex<String>> dfsResultFromB = GraphAlgorithms.dfs(
+      vMap.get("B"),
+      test
+    );
+    System.out.print("Test 4: Simple graph dfs starting with \"B\". ");
+    printList(dfsResultFromB);
   }
 }
